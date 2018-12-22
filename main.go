@@ -134,13 +134,12 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(response)
 }
 func init() {
-	config.Read()
+	// config.Read()
+	config.Server = os.Getenv("server")
+	config.Database = os.Getenv("database")
+	config.Hostname = os.Getenv("hostname")
+	config.Port = os.Getenv("port")
 
-	if config.Database == "" {
-		config.Server = os.Getenv("server")
-		config.Database = os.Getenv("database")
-		config.Hostname = os.Getenv("hostname")
-	}
 }
 
 func main() {
@@ -157,5 +156,9 @@ func main() {
 	router.POST("/create", CreateEndpoint)
 	router.GET("/:id/", Root)
 
-	log.Fatal(http.ListenAndServe(":12345", router))
+	if config.Port == "" {
+		config.Port = "12345"
+	}
+
+	log.Fatal(http.ListenAndServe(":"+config.Port, router))
 }
