@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -134,6 +135,12 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 }
 func init() {
 	config.Read()
+
+	if config.Database == "" {
+		config.Server = os.Getenv("server")
+		config.Database = os.Getenv("database")
+		config.Hostname = os.Getenv("hostname")
+	}
 }
 
 func main() {
