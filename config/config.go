@@ -1,5 +1,11 @@
 package config
 
+import (
+	"log"
+
+	"github.com/BurntSushi/toml"
+)
+
 // Config Represents database server and credentials
 type Config struct {
 	Server   string
@@ -8,17 +14,9 @@ type Config struct {
 	Port     string
 }
 
-// // Read and parse the configuration file
-// func (c *Config) Read() {
-// 	c.Server = os.Getenv("server")
-// 	c.Database = os.Getenv("database")
-// 	c.Hostname = os.Getenv("hostname")
-
-// 	if c.Database != "" {
-// 		return
-// 	}
-
-// 	if _, err := toml.DecodeFile("config.toml", &c); err != nil {
-// 		log.Fatal(err)
-// 	}
-// }
+// Read and parse the configuration file
+func (c *Config) Read() {
+	if _, err := toml.DecodeFile("config.toml", &c); err != nil {
+		log.Fatal(err)
+	}
+}

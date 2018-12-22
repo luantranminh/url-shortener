@@ -55,7 +55,7 @@ func CreateEndpoint(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 			return
 		}
 		respondWithJSON(w, http.StatusOK, map[string]string{
-			"short_url": config.Hostname + result.ID,
+			"short_url": config.Hostname + "/" + result.ID,
 			"url":       result.URL,
 		})
 		return
@@ -134,12 +134,14 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(response)
 }
 func init() {
-	// config.Read()
 	config.Server = os.Getenv("server")
 	config.Database = os.Getenv("database")
 	config.Hostname = os.Getenv("hostname")
-	config.Port = os.Getenv("port")
+	config.Port = os.Getenv("PORT")
 
+	if config.Server == "" || config.Database == "" {
+		config.Read()
+	}
 }
 
 func main() {
@@ -160,5 +162,5 @@ func main() {
 		config.Port = "12345"
 	}
 
-	log.Fatal(http.ListenAndServe(":"+config.Port, router))
+	log.Fatal(http.ListenAndServe(config.Hostname+":"+config.Port, router))
 }
