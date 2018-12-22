@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -159,7 +158,6 @@ func main() {
 	router.POST("/create", CreateEndpoint)
 	router.GET("/:id/", Root)
 
-	fmt.Println(config.Port)
 	if config.Port == "" {
 		config.Port = "12345"
 	}
