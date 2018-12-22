@@ -47,8 +47,11 @@
 .history
 
 
-### ingore congif file
+### ignore config file
 config.toml
+
+### ignore main
+main 
 
 # End of https://www.gitignore.io/api/go,linux,visualstudiocode
 
