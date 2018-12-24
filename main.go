@@ -26,6 +26,7 @@ const (
 
 // CreateEndpoint .
 func CreateEndpoint(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	enableCors(&w)
 	var request MyURL
 
 	// decode request into MyURL struct
@@ -83,7 +84,7 @@ func CreateEndpoint(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 
 // Root .
 func Root(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-
+	enableCors(&w)
 	var request MyURL
 
 	request.ID = params.ByName("id")
@@ -133,6 +134,11 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.WriteHeader(code)
 	w.Write(response)
 }
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func init() {
 	config.Server = os.Getenv("server")
 	config.Database = os.Getenv("database")
