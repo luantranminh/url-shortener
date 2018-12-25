@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -32,6 +34,12 @@ func CreateEndpoint(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 	// decode request into MyURL struct
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	//url validation
+	if !validateURL(request.URL) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -73,7 +81,8 @@ func CreateEndpoint(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 	_, err = collection.InsertOne(ctx, request)
 	defer c()
 	if err != nil {
-		log.Fatal(err.Error())
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{
@@ -137,6 +146,12 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "https://minhluan.ml/shortener")
+}
+
+func validateURL(url string) bool {
+	var regex = regexp.MustCompile(`(?m)^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$`)
+	// run regex for validation after removed leading and trailing spaces
+	return regex.MatchString(strings.TrimSpace(url))
 }
 
 func init() {
